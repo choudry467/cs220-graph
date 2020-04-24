@@ -1,7 +1,7 @@
 package graph.impl;
 
 import java.util.Collection;
-import java.util.TreeMap;
+import java.util.HashMap;
 
 import graph.INode;
 
@@ -23,8 +23,8 @@ import graph.INode;
  */
 public class Node implements INode
 {
-    String name;
-    TreeMap<INode,Integer> neighbors;
+    private String name;
+    private HashMap<INode,Integer> neighbors = new HashMap<>();
     /**
      * Create a new node with the given name. The newly created node should
      * have no edges.
@@ -33,7 +33,6 @@ public class Node implements INode
      */
     public Node(String name) {
         this.name = name;
-        this.neighbors = new TreeMap<>();
     }
     
     
@@ -53,7 +52,7 @@ public class Node implements INode
      * @return
      */
     public Collection<INode> getNeighbors() {
-    	Collection<INode> N = neighbors.keySet();
+    	Collection<INode> N = this.neighbors.keySet();
     	return N;
     }
     
@@ -64,8 +63,7 @@ public class Node implements INode
      * @param weight
      */
     public void addDirectedEdgeToNode(INode n, int weight) {
-        if (!neighbors.containsKey(n))
-        	neighbors.put(n,weight);
+        this.neighbors.put(n,weight);
     }
     
     /**
@@ -76,10 +74,9 @@ public class Node implements INode
      * @param weight
      */
     public void addUndirectedEdgeToNode(INode n, int weight) {
-    	if (!((neighbors.containsKey(n)) && (n.getNeighbors().contains(this)))) {
-        	n.addDirectedEdgeToNode(this, weight);
-        	neighbors.put(n,weight);
-    	}
+    	n.addDirectedEdgeToNode(this, weight);
+    	this.addDirectedEdgeToNode(n,weight);
+    	
     	
     		
     }
@@ -94,9 +91,10 @@ public class Node implements INode
      * @throws IllegalStateException
      */
     public void removeDirectedEdgeToNode(INode n) {
-    	if (neighbors.containsKey(n))
-    		neighbors.remove(n);
-    	throw new IllegalStateException();
+    	if (this.neighbors.containsKey(n))
+    		this.neighbors.remove(n);
+    	else
+    		throw new IllegalStateException();
     }
     
     /**
@@ -110,10 +108,9 @@ public class Node implements INode
      * @throws IllegalStateException
      */
     public void removeUndirectedEdgeToNode(INode n) {
-    	if (((neighbors.containsKey(n)) && (n.getNeighbors().contains(this)))) {
-    		neighbors.remove(n);
-    		n.removeDirectedEdgeToNode(this);
-    	}
+		this.removeDirectedEdgeToNode(n);
+		n.removeDirectedEdgeToNode(this);
+    	
     }
     
     /**
@@ -124,7 +121,7 @@ public class Node implements INode
      * @return
      */
     public boolean hasEdge(INode other) {
-    	if (neighbors.containsKey(other))
+    	if (this.neighbors.containsKey(other))
     			return true;
     	return false;
     }
@@ -139,8 +136,8 @@ public class Node implements INode
      * @throws IllegalStateException
      */
     public int getWeight(INode n) {
-    	if (neighbors.containsKey(n))
-    		return neighbors.get(n);
+    	if (this.neighbors.containsKey(n))
+    		return this.neighbors.get(n);
         throw new IllegalStateException();
     }
 }
