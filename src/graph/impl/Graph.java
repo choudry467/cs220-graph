@@ -2,7 +2,12 @@ package graph.impl;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
+import java.util.Stack;
 
 import graph.IGraph;
 import graph.INode;
@@ -70,10 +75,24 @@ public class Graph implements IGraph
      * @param startNodeName
      * @param v
      */
-    public void breadthFirstSearch(String startNodeName, NodeVisitor v)
-    {
-        // TODO: Implement this method
-        throw new UnsupportedOperationException("Implement this method");
+    public void breadthFirstSearch(String startNodeName, NodeVisitor v){
+    	
+        Set<INode> visited = new HashSet<>();
+        Queue<INode> toVisit = new LinkedList<>();
+        toVisit.offer(getOrCreateNode(startNodeName));
+        while(!toVisit.isEmpty()) {
+        	INode temp = toVisit.poll();
+        	if (visited.contains(temp))
+        		continue;
+        	v.visit(temp);
+        	visited.add(temp);
+        	
+        	for (INode temp2 : temp.getNeighbors()) {
+        		if (!visited.contains(temp2))
+        			toVisit.offer(temp2);
+        	}
+      
+        }
     }
 
     /**
@@ -85,10 +104,24 @@ public class Graph implements IGraph
      * @param startNodeName
      * @param v
      */
-    public void depthFirstSearch(String startNodeName, NodeVisitor v)
-    {
-        // TODO: implement this method
-        throw new UnsupportedOperationException("Implement this method");
+    public void depthFirstSearch(String startNodeName, NodeVisitor v){
+    	
+    	Set<INode> visited = new HashSet<>();
+        Stack<INode> toVisit = new Stack<>();
+        toVisit.push(getOrCreateNode(startNodeName));
+        while(!toVisit.isEmpty()) {
+        	INode temp = toVisit.pop();
+        	if (visited.contains(temp))
+        		continue;
+        	v.visit(temp);
+        	visited.add(temp);
+        	
+        	for (INode temp2 : temp.getNeighbors()) {
+        		if (!visited.contains(temp2))
+        			toVisit.push(temp2);
+        	}
+      
+        }
     }
 
     /**
