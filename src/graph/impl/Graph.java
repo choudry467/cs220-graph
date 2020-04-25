@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
@@ -104,7 +105,7 @@ public class Graph implements IGraph
      * @param startNodeName
      * @param v
      */
-    public void depthFirstSearch(String startNodeName, NodeVisitor v){
+    public void depthFirstSearch(String startNodeName, NodeVisitor v){ // Liked how the only difference between these 2 was of queue and stacks
     	
     	Set<INode> visited = new HashSet<>();
         Stack<INode> toVisit = new Stack<>();
@@ -138,8 +139,21 @@ public class Graph implements IGraph
      * @return
      */
     public Map<INode,Integer> dijkstra(String startName) {
-        // TODO: Implement this method
-        throw new UnsupportedOperationException("Implement this method");
+        Map<INode,Integer> result = new HashMap<>();
+        PriorityQueue<Path> toDo = new PriorityQueue<>();
+        toDo.add(new Path(getOrCreateNode(startName),0));
+        while ( result.size() < getAllNodes().size()) {
+        	Path nextpath = toDo.poll();
+        	INode Node1 = nextpath.destination;
+        	if (result.containsKey(Node1))
+        		continue;
+        	int cost = nextpath.cost;
+        	result.put(Node1, cost);
+        	for(INode temp : Node1.getNeighbors()) {
+        		toDo.add(new Path(temp, Node1.getWeight(temp)+cost));
+        	}	
+        }
+        return result;
     }
     
     /**
@@ -150,8 +164,31 @@ public class Graph implements IGraph
      * 
      * @return
      */
-    public IGraph primJarnik() {
-        //TODO Implement this method
-        throw new UnsupportedOperationException();
+    public IGraph primJarnik() { //This was by far my favorite implementation
+        IGraph prim = new Graph();
+        PriorityQueue<edge> toDo = new PriorityQueue<>(); //edge class with comparable
+        INode start = (INode) this.getAllNodes().toArray()[0];//random first node
+        for(INode temp : start.getNeighbors()) {
+        	toDo.add(new edge(start,temp,start.getWeight(temp)));
+        }
+        while (prim.getAllNodes().size()< this.getAllNodes().size()) {
+        	edge nextedge = toDo.poll();
+        	INode Node1 = nextedge.node1;
+        	INode Node2 = nextedge.node2;
+        	if(prim.containsNode(Node1.getName()) && prim.containsNode(Node2.getName()))//so nodes that have a path are not included again
+        		continue;
+        	INode a = prim.getOrCreateNode(Node1.getName());
+        	INode b = prim.getOrCreateNode(Node2.getName());
+        	a.addUndirectedEdgeToNode(b,nextedge.cost);
+        	for(INode temp : Node2.getNeighbors()) {
+        		if (!temp.equals(Node1)) {
+        		toDo.add(new edge(Node2,temp,Node2.getWeight(temp)));
+        		}
+        	}
+        	
+        }
+        
+        return prim;
+        
     }
 }

@@ -62,7 +62,7 @@ public class Node implements INode
      * @param n
      * @param weight
      */
-    public void addDirectedEdgeToNode(INode n, int weight) {
+    public void addDirectedEdgeToNode(INode n, int weight) { // As you can see in my previous commits I have a habit of using conditional checks which I later realized were just causing problems. Have learnt to write simpler classes
         this.neighbors.put(n,weight);
     }
     
@@ -107,7 +107,7 @@ public class Node implements INode
      * @param n
      * @throws IllegalStateException
      */
-    public void removeUndirectedEdgeToNode(INode n) {
+    public void removeUndirectedEdgeToNode(INode n) {// some of these were not used in the final implementation of graph which is interesting thing to knows
 		this.removeDirectedEdgeToNode(n);
 		n.removeDirectedEdgeToNode(this);
     	
